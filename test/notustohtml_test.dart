@@ -22,8 +22,7 @@ void main() {
         }
       ]);
 
-      expect(
-          converter.getHTML(doc), "<strong>Hello World!<br/><br/></strong>");
+      expect(converter.getHTML(doc), "<strong>Hello World!<br/><br/></strong>");
     });
 
     test("Italic paragraph", () {
@@ -97,68 +96,130 @@ void main() {
     });
   });
 
-  test("Complex example", () {
-    final NotusDocument doc = NotusDocument.fromJson([
-      {"insert": "Title"},
-      {
-        "insert": "\n",
-        "attributes": {"heading": 1}
-      },
-      {"insert": "Normal text, "},
-      {
-        "insert": "bold",
-        "attributes": {"b": true}
-      },
-      {"insert": "\n"},
-      {
-        "insert": "Italic link",
-        "attributes": {"i": true, "a": "https://google.com"}
-      },
-      {"insert": "\nBullets"},
-      {
-        "insert": "\n",
-        "attributes": {"block": "ul"}
-      },
-      {"insert": "More bullets"},
-      {
-        "insert": "\n",
-        "attributes": {"block": "ul"}
-      },
-      {"insert": "Cool quote"},
-      {
-        "insert": "\n",
-        "attributes": {"block": "quote"}
-      },
-      {"insert": "With a heading"},
-      {
-        "insert": "\n",
-        "attributes": {"block": "quote", "heading": 2}
-      },
-      {"insert": "Code block"},
-      {
-        "insert": "\n",
-        "attributes": {"block": "code"}
-      },
-      {"insert": "Weird line thing\n"},
-      {
-        "insert": "​",
-        "attributes": {
-          "embed": {"type": "hr"}
+  group('Blocks', () {
+    test("Quote", () {
+      final NotusDocument doc = NotusDocument.fromJson([
+        {"insert": "Hello World!"},
+        {
+          "insert": "\n",
+          "attributes": {"block": "quote"}
         }
-      },
-      {"insert": "\nHello image\n"},
-      {
-        "insert": "​",
-        "attributes": {
-          "embed": {
-            "type": "image",
-            "source":
-                "http://images.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
-          }
+      ]);
+
+      expect(
+          converter.getHTML(doc), "<blockquote>Hello World!<br/></blockquote>");
+    });
+    test("Code", () {
+      final NotusDocument doc = NotusDocument.fromJson([
+        {"insert": "Hello World!"},
+        {
+          "insert": "\n",
+          "attributes": {"block": "code"}
         }
-      },
-      {"insert": "\n"}
-    ]);
-    //expect(converter.getHTML(doc), "");
+      ]);
+
+      expect(converter.getHTML(doc), "<code>Hello World!<br/></code>");
+    });
+    test("Ordered list", () {
+      final NotusDocument doc = NotusDocument.fromJson([
+        {"insert": "Hello World!"},
+        {
+          "insert": "\n",
+          "attributes": {"block": "ol"}
+        }
+      ]);
+
+      expect(converter.getHTML(doc), "<ol><li>Hello World!<br/></li></ol>");
+    });
+    test("Unordered list", () {
+      final NotusDocument doc = NotusDocument.fromJson([
+        {"insert": "Hello World!"},
+        {
+          "insert": "\n",
+          "attributes": {"block": "ul"}
+        }
+      ]);
+
+      expect(converter.getHTML(doc), "<ul><li>Hello World!<br/></li></ul>");
+    });
+  });
+
+  group('Embeds', () {
+    test("Image", () {
+      final NotusDocument doc = NotusDocument.fromJson([
+        {
+          "insert": "",
+          "attributes": {
+            "embed": {
+              "type": "image",
+              "source": "http://fake.link/image.png",
+            },
+          },
+        },
+        {"insert": "\n"}
+      ]);
+
+      expect(converter.getHTML(doc),
+          "<img src=\"http://fake.link/image.png\"><br/><br/>");
+    });
+    test("Line", () {
+      final NotusDocument doc = NotusDocument.fromJson([
+        {
+          "insert": "",
+          "attributes": {
+            "embed": {
+              "type": "hr",
+            },
+          },
+        },
+        {"insert": "\n"}
+      ]);
+
+      expect(converter.getHTML(doc), "<hr><br/>");
+    });
+  });
+
+  group('Links', () {
+    test("Plain", () {
+      final NotusDocument doc = NotusDocument.fromJson([
+        {
+          "insert": "Hello World!",
+          "attributes": {"a": "http://fake.link"},
+        },
+        {"insert": "\n"}
+      ]);
+
+      expect(converter.getHTML(doc),
+          "<a href=\"http://fake.link\">Hello World!</a><br/><br/>");
+    });
+
+    test("Italic", () {
+      final NotusDocument doc = NotusDocument.fromJson([
+        {
+          "insert": "Hello World!",
+          "attributes": {"a": "http://fake.link", "i": true},
+        },
+        {"insert": "\n"}
+      ]);
+
+      expect(converter.getHTML(doc),
+          "<em><a href=\"http://fake.link\">Hello World!</a></em><br/><br/>");
+    });
+
+    test("In list", () {
+      final NotusDocument doc = NotusDocument.fromJson([
+        {
+          "insert": "Hello World!",
+          "attributes": {"a": "http://fake.link"},
+        },
+        {
+          "insert": "\n",
+          "attributes": {"block": "ul"},
+        }
+      ]);
+
+      expect(converter.getHTML(doc),
+          "<ul><li><a href=\"http://fake.link\">Hello World!<br/></a></li></ul>");
+    });
   });
 }
