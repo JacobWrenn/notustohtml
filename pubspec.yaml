@@ -1,0 +1,10 @@
+name: notustohtml
+description: Convert the Notus document format to an HTML representation.
+version: 0.0.1
+homepage: https://github.com/JacobWrenn/notus_to_html
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  notus:
