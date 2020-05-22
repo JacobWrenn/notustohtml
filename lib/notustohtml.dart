@@ -3,22 +3,23 @@ library notustohtml;
 import 'dart:convert';
 
 import 'package:notus/notus.dart';
-import 'package:notustohtml/models/notusinsert.dart';
 
+/// Class containing all the converter methods available in this package.
 class NotusConverter {
-  List list;
+  List _list;
 
+  /// Converts the Notus document [doc] to an HTML string.
   String getHTML(NotusDocument doc) {
-    list = jsonDecode(jsonEncode(doc));
+    _list = jsonDecode(jsonEncode(doc));
 
     String html = "";
 
-    for (int i = 0; i < list.length; i++) {
-      if (i + 1 < list.length) {
-        html += _htmlFromInsert(NotusInsert.fromJSON(list[i]),
-            NotusInsert.fromJSON(list[i + 1]), i);
+    for (int i = 0; i < _list.length; i++) {
+      if (i + 1 < _list.length) {
+        html += _htmlFromInsert(NotusInsert.fromJSON(_list[i]),
+            NotusInsert.fromJSON(_list[i + 1]), i);
       } else {
-        html += _htmlFromInsert(NotusInsert.fromJSON(list[i]), null, i);
+        html += _htmlFromInsert(NotusInsert.fromJSON(_list[i]), null, i);
       }
 
       if (html.length-5 > 0) {
@@ -51,8 +52,8 @@ class NotusConverter {
   bool _wasLine = false;
 
   bool _nextWillBeList(String type, int index) {
-    if (index + 3 < list.length) {
-      NotusInsert next = NotusInsert.fromJSON(list[index + 3]);
+    if (index + 3 < _list.length) {
+      NotusInsert next = NotusInsert.fromJSON(_list[index + 3]);
       if (next.attributes != null && next.attributes["block"] != null) {
         return next.attributes["block"] == type;
       }
@@ -234,5 +235,19 @@ class NotusConverter {
       "first": first,
       "last": last,
     };
+  }
+}
+
+class NotusInsert {
+  final String insert;
+  final Map attributes;
+
+  NotusInsert({this.insert, this.attributes});
+
+  factory NotusInsert.fromJSON(Map map) {
+    return NotusInsert(
+      insert: map["insert"],
+      attributes: map["attributes"],
+    );
   }
 }
