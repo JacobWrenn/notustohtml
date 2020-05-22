@@ -2,13 +2,18 @@
 
 Convert the Notus document format to an HTML representation.
 
-## Getting Started
+## Overview
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+This project is a generic Dart package used to get an HTML output from the Notus document format. Notus documents are used by the popular [Zefyr](https://github.com/memspace/zefyr) rich text editor.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+## Usage
+
+```dart
+final NotusConverter converter = NotusConverter();
+
+converter.getHTML(myNotusDocument) // HTML Output
+```
+
+## Contributing
+
+This package was created for a personal project. Pull requests are accepted on [GitHub](https://github.com/JacobWrenn/notus_to_html) if you are interested in building upon this.

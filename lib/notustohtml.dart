@@ -1,7 +1,9 @@
 library notustohtml;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
+import 'package:notus/notus.dart';
+
+class NotusConverter {
+  String getHTML(NotusDocument doc) {
+    return "";
+  }
 }
