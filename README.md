@@ -11,7 +11,7 @@ This project is a generic Dart package used to get an HTML output from the Notus
 ```dart
 final NotusConverter converter = NotusConverter();
 
-converter.getHTML(myNotusDocument) // HTML Output
+converter.getHTML(myNotusDocument); // HTML Output
 ```
 
 ## Contributing
