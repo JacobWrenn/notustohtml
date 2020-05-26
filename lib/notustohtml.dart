@@ -3,251 +3,248 @@ library notustohtml;
 import 'dart:convert';
 
 import 'package:notus/notus.dart';
+import 'package:quill_delta/quill_delta.dart';
 
-/// Class containing all the converter methods available in this package.
-class NotusConverter {
-  List _list;
+class NotusHtmlCodec extends Codec<Delta, String> {
+  const NotusHtmlCodec();
 
-  /// Converts the Notus document [doc] to an HTML string.
-  String getHTML(NotusDocument doc) {
-    _list = jsonDecode(jsonEncode(doc));
+  @override
+  Converter<String, Delta> get decoder =>
+      throw UnimplementedError('Decoding is not implemented yet.');
 
-    String html = "";
-
-    for (int i = 0; i < _list.length; i++) {
-      if (i + 1 < _list.length) {
-        html += _htmlFromInsert(NotusInsert.fromJSON(_list[i]),
-            NotusInsert.fromJSON(_list[i + 1]), i);
-      } else {
-        html += _htmlFromInsert(NotusInsert.fromJSON(_list[i]), null, i);
-      }
-
-      if (html.length-5 > 0) {
-        String ending = html.substring(html.length - 5);
-
-        if (ending == "</ul>" || ending == "</ol>") {
-          _placedStarter = false;
-        }
-      }
-
-      if (html.length-13 > 0) {
-        String ending = html.substring(html.length - 13);
-
-        if (ending == "</blockquote>") {
-          _placedQuoteStart = false;
-        }
-      }
-    }
-
-    return html;
-  }
-
-  bool _prevWasHeading = false;
-  bool _isHeading = false;
-  bool _innerHTML = true;
-  bool _isList = false;
-  bool _wasList = false;
-  bool _wasNumberedList = false;
-  bool _isLine = false;
-  bool _wasLine = false;
-
-  bool _nextWillBeList(String type, int index) {
-    if (index + 3 < _list.length) {
-      NotusInsert next = NotusInsert.fromJSON(_list[index + 3]);
-      if (next.attributes != null && next.attributes["block"] != null) {
-        return next.attributes["block"] == type;
-      }
-    }
-
-    return false;
-  }
-
-  bool _placedStarter = false;
-  bool _placedQuoteStart = false;
-  bool _isQuote = false;
-  bool _wasQuote = false;
-
-  String _htmlFromInsert(NotusInsert insert, NotusInsert next, int index) {
-    String el = _getEl(insert, next);
-    String endingEl = _endingEl(insert, el);
-    String first = _styleEl(insert)["first"];
-    String last = _styleEl(insert)["last"];
-
-    if (next != null && RegExp("^\n\$").hasMatch(next.insert)) {
-      if (next != null &&
-          next.attributes != null &&
-          next.attributes["heading"] != null) {
-        _isHeading = true;
-        first += "<h${next.attributes["heading"]}>";
-        last = "</h${next.attributes["heading"]}>" + last;
-      }
-    }
-
-    if (insert.attributes != null && insert.attributes["a"] != null) {
-      first += "<a href=\"${insert.attributes["a"]}\">";
-      last = "</a>" + last;
-    }
-
-    String text = insert.insert;
-    text = text.replaceAll(RegExp("\n"), "<br/><br/>");
-
-    if (next != null &&
-        next.attributes != null &&
-        next.attributes["embed"] != null) {
-      if (next.attributes["embed"]["type"] == "hr") text = insert.insert;
-    }
-
-    if (_isQuote) {
-      if (_placedQuoteStart) {
-        el = "";
-      } else {
-        _placedQuoteStart = true;
-      }
-      endingEl = "";
-    }
-
-    if (_isList) {
-      if (_placedStarter) {
-        el = "";
-      } else {
-        _placedStarter = true;
-      }
-      endingEl = "";
-      text = insert.insert;
-      first = "<li>" + first;
-      last += "</li>";
-    }
-
-    if (!_nextWillBeList("ul", index) && _wasList) {
-      _wasList = false;
-      endingEl = "ul";
-    }
-
-    if (!_nextWillBeList("quote", index) && _wasQuote) {
-      _wasQuote = false;
-      endingEl = "blockquote";
-    }
-
-    if (!_nextWillBeList("ol", index) && _wasNumberedList) {
-      _wasNumberedList = false;
-      endingEl = "ol";
-    }
-
-    if (_prevWasHeading) {
-      _prevWasHeading = false;
-      return "";
-    }
-
-    if (_wasLine) {
-      _wasLine = false;
-      text = text.replaceAll(RegExp("^<br\/><br\/>"), "<br/>");
-    }
-
-    if (_isLine) {
-      _isLine = false;
-      _wasLine = true;
-    }
-
-    if (_isHeading) {
-      _prevWasHeading = true;
-      _isHeading = false;
-      return "${(el != "" ? "<$el>" : "")}$first$text<br/>$last${(endingEl != "") ? "</$endingEl>" : ""}";
-    }
-
-    if (!_innerHTML) {
-      _innerHTML = true;
-      return "${(el != "" ? "<$el>" : "")}";
-    }
-
-    return "${(el != "" ? "<$el>" : "")}$first$text$last${(endingEl != "") ? "</$endingEl>" : ""}";
-  }
-
-  String _getEl(NotusInsert insert, NotusInsert next) {
-    _isList = false;
-    _isQuote = false;
-
-    if (next != null &&
-        next.attributes != null &&
-        next.attributes["block"] != null) {
-      _isHeading = true;
-
-      if (next.attributes["block"] == "ol") {
-        _isList = true;
-        _wasNumberedList = true;
-      }
-
-      if (next.attributes["block"] == "ul") {
-        _isList = true;
-        _wasList = true;
-      }
-
-      if (next.attributes["block"] == "quote") {
-        _isQuote = true;
-        _wasQuote = true;
-      }
-
-      return (next.attributes["block"] == "quote")
-          ? "blockquote"
-          : next.attributes["block"];
-    }
-
-    if (insert.attributes != null && insert.attributes["embed"] != null) {
-      _innerHTML = false;
-      if (insert.attributes["embed"]["type"] == "hr") {
-        _isLine = true;
-        return "hr";
-      }
-
-      if (insert.attributes["embed"]["type"] == "image") {
-        return "img src=\"${insert.attributes["embed"]["source"]}\"";
-      }
-    }
-
-    return "";
-  }
-
-  String _endingEl(NotusInsert insert, String el) {
-    return el;
-  }
-
-  Map _styleEl(NotusInsert insert) {
-    if (insert.attributes == null) {
-      return {
-        "first": "",
-        "last": "",
-      };
-    }
-
-    String first = "";
-    String last = "";
-
-    if (insert.attributes["b"] != null) {
-      first += "<strong>";
-      last += "</strong>";
-    }
-
-    if (insert.attributes["i"] != null) {
-      first += "<em>";
-      last = "</em>" + last;
-    }
-
-    return {
-      "first": first,
-      "last": last,
-    };
-  }
+  @override
+  Converter<Delta, String> get encoder => _NotusHtmlEncoder();
 }
 
-class NotusInsert {
-  final String insert;
-  final Map attributes;
+class _NotusHtmlEncoder extends Converter<Delta, String> {
+  static const kBold = 'strong';
+  static const kItalic = 'em';
+  static final kSimpleBlocks = <NotusAttribute, String>{
+    NotusAttribute.bq: 'blockquote',
+    NotusAttribute.ul: 'ul',
+    NotusAttribute.ol: 'ol',
+  };
 
-  NotusInsert({this.insert, this.attributes});
+  @override
+  String convert(Delta input) {
+    final iterator = DeltaIterator(input);
+    final buffer = StringBuffer();
+    final lineBuffer = StringBuffer();
+    NotusAttribute<String> currentBlockStyle;
+    var currentInlineStyle = NotusStyle();
+    var currentBlockLines = [];
 
-  factory NotusInsert.fromJSON(Map map) {
-    return NotusInsert(
-      insert: map["insert"],
-      attributes: map["attributes"],
-    );
+    void _handleBlock(NotusAttribute<String> blockStyle) {
+      if (currentBlockLines.isEmpty) {
+        return; // Empty block
+      }
+
+      if (blockStyle == null) {
+        buffer.write(currentBlockLines.join('\n\n'));
+        buffer.writeln();
+      } else if (blockStyle == NotusAttribute.code) {
+        _writeAttribute(buffer, blockStyle);
+        buffer.write(currentBlockLines.join('\n'));
+        _writeAttribute(buffer, blockStyle, close: true);
+        buffer.writeln();
+      } else if (blockStyle == NotusAttribute.bq) {
+        _writeAttribute(buffer, blockStyle);
+        buffer.write(currentBlockLines.join('\n'));
+        _writeAttribute(buffer, blockStyle, close: true);
+        buffer.writeln();
+      } else if (blockStyle == NotusAttribute.ol || blockStyle == NotusAttribute.ul) {
+        _writeAttribute(buffer, blockStyle);
+        buffer.write("<li>");
+        buffer.write(currentBlockLines.join('</li><li>'));
+        buffer.write("</li>");
+        _writeAttribute(buffer, blockStyle, close: true);
+        buffer.writeln();
+      } else {
+        for (var line in currentBlockLines) {
+          _writeBlockTag(buffer, blockStyle);
+          buffer.write(line);
+          buffer.writeln();
+        }
+      }
+      buffer.writeln();
+    }
+
+    void _handleSpan(String text, Map<String, dynamic> attributes) {
+      final style = NotusStyle.fromJson(attributes);
+      currentInlineStyle =
+          _writeInline(lineBuffer, text, style, currentInlineStyle);
+    }
+
+    void _handleLine(Map<String, dynamic> attributes) {
+      final style = NotusStyle.fromJson(attributes);
+      final lineBlock = style.get(NotusAttribute.block);
+      if (lineBlock == currentBlockStyle) {
+        currentBlockLines.add(_writeLine(lineBuffer.toString(), style));
+      } else {
+        _handleBlock(currentBlockStyle);
+        currentBlockLines.clear();
+        currentBlockLines.add(_writeLine(lineBuffer.toString(), style));
+
+        currentBlockStyle = lineBlock;
+      }
+      lineBuffer.clear();
+    }
+
+    while (iterator.hasNext) {
+      final op = iterator.next();
+      final lf = op.data.indexOf('\n');
+      if (lf == -1) {
+        _handleSpan(op.data, op.attributes);
+      } else {
+        var span = StringBuffer();
+        for (var i = 0; i < op.data.length; i++) {
+          if (op.data.codeUnitAt(i) == 0x0A) {
+            if (span.isNotEmpty) {
+              // Write the span if it's not empty.
+              _handleSpan(span.toString(), op.attributes);
+            }
+            // Close any open inline styles.
+            _handleSpan('', null);
+            _handleLine(op.attributes);
+            span.clear();
+          } else {
+            span.writeCharCode(op.data.codeUnitAt(i));
+          }
+        }
+        // Remaining span
+        if (span.isNotEmpty) {
+          _handleSpan(span.toString(), op.attributes);
+        }
+      }
+    }
+    _handleBlock(currentBlockStyle); // Close the last block
+    return buffer.toString().replaceAll("\n", "<br>");
+  }
+
+  String _writeLine(String text, NotusStyle style) {
+    var buffer = StringBuffer();
+    // Open heading
+    if (style.contains(NotusAttribute.heading)) {
+      _writeAttribute(buffer, style.get<int>(NotusAttribute.heading));
+    }
+    // Write the text itself
+    buffer.write(text);
+    // Close the heading
+    if (style.contains(NotusAttribute.heading)) {
+      _writeAttribute(buffer, style.get<int>(NotusAttribute.heading),
+          close: true);
+    }
+    return buffer.toString();
+  }
+
+  String _trimRight(StringBuffer buffer) {
+    var text = buffer.toString();
+    if (!text.endsWith(' ')) return '';
+    final result = text.trimRight();
+    buffer.clear();
+    buffer.write(result);
+    return ' ' * (text.length - result.length);
+  }
+
+  NotusStyle _writeInline(StringBuffer buffer, String text, NotusStyle style,
+      NotusStyle currentStyle) {
+    NotusAttribute wasA;
+    // First close any current styles if needed
+    for (var value in currentStyle.values) {
+      if (value.scope == NotusAttributeScope.line) continue;
+      if (value.key == "a") {
+        wasA = value;
+        continue;
+      }
+      if (style.containsSame(value)) continue;
+      final padding = _trimRight(buffer);
+      _writeAttribute(buffer, value, close: true);
+      if (padding.isNotEmpty) buffer.write(padding);
+    }
+    if (wasA != null) {
+      _writeAttribute(buffer, wasA, close: true);
+    }
+    // Now open any new styles.
+    for (var value in style.values) {
+      if (value.scope == NotusAttributeScope.line) continue;
+      if (currentStyle.containsSame(value)) continue;
+      final originalText = text;
+      text = text.trimLeft();
+      final padding = ' ' * (originalText.length - text.length);
+      if (padding.isNotEmpty) buffer.write(padding);
+      _writeAttribute(buffer, value);
+    }
+    // Write the text itself
+    buffer.write(text);
+    return style;
+  }
+
+  void _writeAttribute(StringBuffer buffer, NotusAttribute attribute,
+      {bool close = false}) {
+    if (attribute == NotusAttribute.bold) {
+      _writeBoldTag(buffer, close: close);
+    } else if (attribute == NotusAttribute.italic) {
+      _writeItalicTag(buffer, close: close);
+    } else if (attribute.key == NotusAttribute.link.key) {
+      _writeLinkTag(buffer, attribute as NotusAttribute<String>, close: close);
+    } else if (attribute.key == NotusAttribute.heading.key) {
+      _writeHeadingTag(buffer, attribute as NotusAttribute<int>, close: close);
+    } else if (attribute.key == NotusAttribute.block.key) {
+      _writeBlockTag(buffer, attribute as NotusAttribute<String>, close: close);
+    } else if (attribute.key == NotusAttribute.embed.key) {
+      _writeEmbedTag(buffer, attribute as EmbedAttribute, close: close);
+    } else {
+      throw ArgumentError('Cannot handle $attribute');
+    }
+  }
+
+  void _writeBoldTag(StringBuffer buffer, {bool close = false}) {
+    buffer.write(!close ? "<$kBold>" : "</$kBold>");
+  }
+
+  void _writeItalicTag(StringBuffer buffer, {bool close = false}) {
+    buffer.write(!close ? "<$kItalic>" : "</$kItalic>");
+  }
+
+  void _writeLinkTag(StringBuffer buffer, NotusAttribute<String> link,
+      {bool close = false}) {
+    if (close) {
+      buffer.write('</a>');
+    } else {
+      buffer.write('<a href="${link.value}">');
+    }
+  }
+
+  void _writeHeadingTag(StringBuffer buffer, NotusAttribute<int> heading,
+      {bool close = false}) {
+    var level = heading.value;
+    buffer.write(!close ? "<h$level>" : "</h$level>");
+  }
+
+  void _writeBlockTag(StringBuffer buffer, NotusAttribute<String> block,
+      {bool close = false}) {
+    if (block == NotusAttribute.code) {
+      if (!close) {
+        buffer.write('\n<code>');
+      } else {
+        buffer.write('</code>\n');
+      }
+    } else {
+      if (!close) {
+        buffer.write('<${kSimpleBlocks[block]}>');
+      } else {
+        buffer.write('</${kSimpleBlocks[block]}>');
+      }
+    }
+  }
+
+  void _writeEmbedTag(StringBuffer buffer, EmbedAttribute embed,
+      {bool close = false}) {
+    if (close) return;
+    if (embed.type == EmbedType.horizontalRule) {
+      buffer.write("<hr>");
+    } else if (embed.type == EmbedType.image) {
+      buffer.write('<img src="${embed.value["source"]}">');
+    }
   }
 }

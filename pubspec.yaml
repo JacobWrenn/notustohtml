@@ -1,6 +1,6 @@
 name: notustohtml
 description: Convert the Notus document format to an HTML representation.
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/JacobWrenn/notustohtml
 
 environment:
@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   notus: ^0.1.5
+  quill_delta: ^1.0.2
 
 dev_dependencies:
   test:

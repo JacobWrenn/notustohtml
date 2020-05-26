@@ -226,7 +226,7 @@ packages:
     source: hosted
     version: "1.4.4"
   quill_delta:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: quill_delta
       url: "https://pub.dartlang.org"
