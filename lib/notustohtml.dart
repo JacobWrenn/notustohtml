@@ -260,18 +260,18 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
     html.body.nodes.asMap().forEach((index, node) {
       var next = null;
       if (index + 1 < html.body.nodes.length) next = html.body.nodes[index + 1];
-      delta = parseNode(node, delta, next);
+      delta = _parseNode(node, delta, next);
     });
 
     return delta;
   }
 
-  Delta parseNode(node, Delta delta, next, {inList, inBlock}) {
+  Delta _parseNode(node, Delta delta, next, {inList, inBlock}) {
     if (node.runtimeType == Element) {
       Element element = node;
       if (element.localName == "ul") {
         element.children.forEach((child) {
-          delta = parseElement(
+          delta = _parseElement(
               child, delta, _supportedElements[child.localName],
               listType: "ul", next: next, inList: inList, inBlock: inBlock);
           return delta;
@@ -279,7 +279,7 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
       }
       if (element.localName == "ol") {
         element.children.forEach((child) {
-          delta = parseElement(
+          delta = _parseElement(
               child, delta, _supportedElements[child.localName],
               listType: "ol", next: next, inList: inList, inBlock: inBlock);
           return delta;
@@ -289,7 +289,7 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
         return delta;
       }
       delta =
-          parseElement(element, delta, _supportedElements[element.localName], next: next, inList: inList, inBlock: inBlock);
+          _parseElement(element, delta, _supportedElements[element.localName], next: next, inList: inList, inBlock: inBlock);
       return delta;
     } else {
       Text text = node;
@@ -304,7 +304,7 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
     }
   }
 
-  Delta parseElement(Element element, Delta delta, String type,
+  Delta _parseElement(Element element, Delta delta, String type,
       {Map<String, dynamic> attributes, String listType, next, inList, inBlock}) {
     if (type == "block") {
       Map<String, dynamic> blockAttributes = {};
@@ -330,7 +330,7 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
       element.nodes.asMap().forEach((index, node) {
         var next = null;
         if (index + 1 < element.nodes.length) next = element.nodes[index + 1];
-        delta = parseNode(node, delta, next, inList: element.localName == "li", inBlock: blockAttributes);
+        delta = _parseNode(node, delta, next, inList: element.localName == "li", inBlock: blockAttributes);
       });
       if (inBlock == null) {
         delta..insert("\n", blockAttributes);
@@ -383,7 +383,7 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
           if (_supportedElements[element.localName] == null) {
             return;
           }
-          delta = parseElement(
+          delta = _parseElement(
               element, delta, _supportedElements[element.localName],
               attributes: attributes, next: next);
         });
