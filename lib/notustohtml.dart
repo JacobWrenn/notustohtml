@@ -258,7 +258,7 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
     Document html = parse(input);
 
     html.body.nodes.asMap().forEach((index, node) {
-      var next = null;
+      var next;
       if (index + 1 < html.body.nodes.length) next = html.body.nodes[index + 1];
       delta = _parseNode(node, delta, next);
     });
@@ -328,7 +328,7 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
         blockAttributes["block"] = listType;
       }
       element.nodes.asMap().forEach((index, node) {
-        var next = null;
+        var next;
         if (index + 1 < element.nodes.length) next = element.nodes[index + 1];
         delta = _parseNode(node, delta, next, inList: element.localName == "li", inBlock: blockAttributes);
       });
