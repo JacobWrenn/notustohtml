@@ -6,7 +6,7 @@ Convert between the Notus document format and HTML.
 
 This project is a generic Dart package used to convert between HTML and the Notus document format. Notus documents are used by the popular [Zefyr](https://github.com/memspace/zefyr) rich text editor.
 
-The Notus format for Zefyr utilise Deltas to represent the document. These Deltas are not compatible with other editors. The Deltas used in this converter can only be used with Notus and Zefyr.
+The Notus format for Zefyr utilises Deltas to represent the document. These Deltas are not compatible with other editors. The Deltas used in this converter can only be used with Notus and Zefyr.
 
 ## Usage
 
