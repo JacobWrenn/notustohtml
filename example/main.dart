@@ -1,5 +1,6 @@
 import 'package:notus/notus.dart';
 import 'package:notustohtml/notustohtml.dart';
+import 'package:quill_delta/quill_delta.dart';
 
 void main() {
   final converter = NotusHtmlCodec();
@@ -21,4 +22,7 @@ void main() {
 
   String html = converter.encode(doc.toDelta());
   print(html); // The HTML representation of the Notus document
+
+  Delta delta = converter.decode(html); // Zefyr compatible Delta
+  NotusDocument document = NotusDocument.fromDelta(delta); // Notus document ready to be loaded into Zefyr
 }
