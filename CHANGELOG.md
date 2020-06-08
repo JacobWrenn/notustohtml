@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.6] - 2020-05-31
+
+* Fix bugs with HTML decoding.
+
 ## [0.0.4] - 2020-05-31
 
 * Allow decoding of HTML to a Zefyr compatible Delta.

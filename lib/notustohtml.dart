@@ -288,8 +288,9 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
       if (_supportedElements[element.localName] == null) {
         return delta;
       }
-      delta =
-          _parseElement(element, delta, _supportedElements[element.localName], next: next, inList: inList, inBlock: inBlock);
+      delta = _parseElement(
+          element, delta, _supportedElements[element.localName],
+          next: next, inList: inList, inBlock: inBlock);
       return delta;
     } else {
       Text text = node;
@@ -305,7 +306,11 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
   }
 
   Delta _parseElement(Element element, Delta delta, String type,
-      {Map<String, dynamic> attributes, String listType, next, inList, inBlock}) {
+      {Map<String, dynamic> attributes,
+      String listType,
+      next,
+      inList,
+      inBlock}) {
     if (type == "block") {
       Map<String, dynamic> blockAttributes = {};
       if (inBlock != null) blockAttributes = inBlock;
@@ -330,7 +335,8 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
       element.nodes.asMap().forEach((index, node) {
         var next;
         if (index + 1 < element.nodes.length) next = element.nodes[index + 1];
-        delta = _parseNode(node, delta, next, inList: element.localName == "li", inBlock: blockAttributes);
+        delta = _parseNode(node, delta, next,
+            inList: element.localName == "li", inBlock: blockAttributes);
       });
       if (inBlock == null) {
         delta..insert("\n", blockAttributes);
@@ -339,21 +345,21 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
     } else if (type == "embed") {
       Map<String, dynamic> embedAttributes = {};
       if (element.localName == "img") {
-        embedAttributes["embed"] = {
-          "type": "image",
-          "source": element.attributes["src"],
-        };
+        delta..insert("\n");
+        NotusDocument tempdocument = NotusDocument.fromDelta(delta);
+        var index = tempdocument.length;
+        tempdocument.format(index - 1, 0,
+            NotusAttribute.embed.image(element.attributes["src"]));
+        return tempdocument.toDelta();
       }
       if (element.localName == "hr") {
-        embedAttributes["embed"] = {
-          "type": "hr",
-        };
+        delta..insert("\n");
+        NotusDocument tempdocument = NotusDocument.fromDelta(delta);
+        var index = tempdocument.length;
+        tempdocument.format(index - 1, 0,
+            NotusAttribute.embed.horizontalRule);
+        return tempdocument.toDelta();
       }
-      List json = jsonDecode(jsonEncode(delta.toJson()));
-      json.add({"insert": "", "attributes": embedAttributes});
-      delta = Delta.fromJson(json);
-      delta..insert("\n");
-      return delta;
     } else {
       if (attributes == null) attributes = {};
       if (element.localName == "em") {
@@ -368,7 +374,8 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
       if (element.children.isEmpty) {
         if (attributes["a"] != null) {
           delta..insert(element.text, attributes);
-          if (inList == null || (inList != null && !inList)) delta..insert("\n");
+          if (inList == null || (inList != null && !inList))
+            delta..insert("\n");
         } else {
           if (next != null &&
               next.runtimeType == Element &&
