@@ -343,23 +343,21 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
       }
       return delta;
     } else if (type == "embed") {
-      Map<String, dynamic> embedAttributes = {};
+      NotusDocument tempdocument;
       if (element.localName == "img") {
         delta..insert("\n");
-        NotusDocument tempdocument = NotusDocument.fromDelta(delta);
+        tempdocument = NotusDocument.fromDelta(delta);
         var index = tempdocument.length;
         tempdocument.format(index - 1, 0,
             NotusAttribute.embed.image(element.attributes["src"]));
-        return tempdocument.toDelta();
       }
       if (element.localName == "hr") {
         delta..insert("\n");
-        NotusDocument tempdocument = NotusDocument.fromDelta(delta);
+        tempdocument = NotusDocument.fromDelta(delta);
         var index = tempdocument.length;
-        tempdocument.format(index - 1, 0,
-            NotusAttribute.embed.horizontalRule);
-        return tempdocument.toDelta();
+        tempdocument.format(index - 1, 0, NotusAttribute.embed.horizontalRule);
       }
+      return tempdocument.toDelta();
     } else {
       if (attributes == null) attributes = {};
       if (element.localName == "em") {
