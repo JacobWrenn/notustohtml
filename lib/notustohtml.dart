@@ -262,8 +262,10 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
       if (index + 1 < html.body.nodes.length) next = html.body.nodes[index + 1];
       delta = _parseNode(node, delta, next);
     });
-
-    return delta;
+    if (delta.last.data.endsWith("\n")) {
+      return delta;
+    }
+    return delta..insert("\n");
   }
 
   Delta _parseNode(node, Delta delta, next, {inList, inBlock}) {

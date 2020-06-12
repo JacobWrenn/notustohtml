@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.7] - 2020-06-12
+
+* Ensure deltas end with `\n`
+
 ## [0.0.6] - 2020-05-31
 
 * Fix bugs with HTML decoding.
