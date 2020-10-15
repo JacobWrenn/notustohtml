@@ -61,6 +61,11 @@ class _NotusHtmlEncoder extends Converter<Delta, String> {
         buffer.write("</li>");
         _writeAttribute(buffer, blockStyle, close: true);
         buffer.writeln();
+      } else if (blockStyle.value == "p") {
+        buffer.write("<p>");
+        buffer.write(currentBlockLines.join(''));
+        buffer.write("</p>");
+        buffer.writeln();
       } else {
         for (var line in currentBlockLines) {
           _writeBlockTag(buffer, blockStyle);
@@ -309,10 +314,10 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
 
   Delta _parseElement(Element element, Delta delta, String type,
       {Map<String, dynamic> attributes,
-      String listType,
-      next,
-      inList,
-      inBlock}) {
+        String listType,
+        next,
+        inList,
+        inBlock}) {
     if (type == "block") {
       Map<String, dynamic> blockAttributes = {};
       if (inBlock != null) blockAttributes = inBlock;
@@ -330,6 +335,9 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
       }
       if (element.localName == "code") {
         blockAttributes["block"] = "code";
+      }
+      if (element.localName == "p") {
+        blockAttributes["block"] = "p";
       }
       if (element.localName == "li") {
         blockAttributes["block"] = listType;
@@ -374,7 +382,7 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
       if (element.children.isEmpty) {
         if (attributes["a"] != null) {
           delta..insert(element.text, attributes);
-          if (inList == null || (inList != null && !inList))
+          if ((inList == null || (inList != null && !inList)) && inBlock == null)
             delta..insert("\n");
         } else {
           if (next != null &&
@@ -386,13 +394,19 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
           }
         }
       } else {
-        element.children.forEach((element) {
-          if (_supportedElements[element.localName] == null) {
-            return;
+        element.nodes.forEach((node) {
+          if (node.runtimeType == Element) {
+            var elementType = _supportedElements[(node as Element).localName];
+            if (elementType == null) {
+              return;
+            }
+            delta = _parseElement(
+                node, delta, elementType,
+                attributes: attributes, next: next);
+
+          } else if (node.runtimeType == Text) {
+            delta = _parseNode(node, delta,  next);
           }
-          delta = _parseElement(
-              element, delta, _supportedElements[element.localName],
-              attributes: attributes, next: next);
         });
       }
       return delta;
@@ -410,7 +424,7 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
     "em": "inline",
     "strong": "inline",
     "a": "inline",
-    "p": "inline",
+    "p": "block",
     "img": "embed",
     "hr": "embed",
   };
