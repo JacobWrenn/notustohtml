@@ -13,8 +13,7 @@ void main() {
           {"insert": "Hello World!\n"}
         ]);
 
-        expect(converter.encode(doc.toDelta()),
-            "Hello World!<br><br>");
+        expect(converter.encode(doc.toDelta()), "Hello World!<br><br>");
       });
 
       test("Bold paragraph", () {
@@ -37,8 +36,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()),
-            "<em>Hello World!</em><br><br>");
+        expect(
+            converter.encode(doc.toDelta()), "<em>Hello World!</em><br><br>");
       });
 
       test("Bold and Italic paragraph", () {
@@ -64,8 +63,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()),
-            "<h1>Hello World!</h1><br><br>");
+        expect(
+            converter.encode(doc.toDelta()), "<h1>Hello World!</h1><br><br>");
       });
 
       test("2", () {
@@ -77,8 +76,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()),
-            "<h2>Hello World!</h2><br><br>");
+        expect(
+            converter.encode(doc.toDelta()), "<h2>Hello World!</h2><br><br>");
       });
 
       test("3", () {
@@ -90,8 +89,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()),
-            "<h3>Hello World!</h3><br><br>");
+        expect(
+            converter.encode(doc.toDelta()), "<h3>Hello World!</h3><br><br>");
       });
 
       test("In list", () {
@@ -324,8 +323,7 @@ void main() {
           }
         ]);
 
-        expect(
-            converter.encode(doc.toDelta()),
+        expect(converter.encode(doc.toDelta()),
             "<ul><li><a href=\"http://fake.link\">Hello World!</a></li></ul><br><br>");
       });
     });
