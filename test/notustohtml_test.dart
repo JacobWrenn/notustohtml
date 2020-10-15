@@ -109,14 +109,14 @@ void main() {
 
     group('Blocks', () {
       test("Paragraph Element", () {
-        final String html = "<p>Hello World!</p><br><br>";
+        final String html = "Hello World!<br><br>";
         final NotusDocument doc = NotusDocument.fromJson([
           {
             "insert": "Hello World!",
           },
           {
             "insert": "\n",
-            "attributes": {"block": "p"},
+            "attributes": {},
           }
         ]);
 
@@ -137,7 +137,7 @@ void main() {
           },
           {
             "insert": "\n",
-            "attributes": {"block": "p"},
+            "attributes": {},
           }
         ]);
 
@@ -159,7 +159,7 @@ void main() {
           },
           {
             "insert": "\n",
-            "attributes": {"block": "p"},
+            "attributes": {},
           },
           {
             "insert": "Hello World!",
@@ -173,7 +173,7 @@ void main() {
           },
           {
             "insert": "\n",
-            "attributes": {"block": "p"},
+            "attributes": {},
           }
         ]);
 
@@ -440,7 +440,7 @@ void main() {
           },
           {
             "insert": "\n",
-            "attributes": {"block": "p"},
+            "attributes": {},
           }
         ]);
 
@@ -461,7 +461,7 @@ void main() {
           },
           {
             "insert": "\n",
-            "attributes": {"block": "p"},
+            "attributes": {},
           }
         ]);
 
@@ -483,7 +483,7 @@ void main() {
           },
           {
             "insert": "\n",
-            "attributes": {"block": "p"},
+            "attributes": {},
           },
           {
             "insert": "Hello World!",
@@ -497,7 +497,7 @@ void main() {
           },
           {
             "insert": "\n",
-            "attributes": {"block": "p"},
+            "attributes": {},
           }
         ]);
 
