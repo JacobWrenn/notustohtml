@@ -13,7 +13,8 @@ void main() {
           {"insert": "Hello World!\n"}
         ]);
 
-        expect(converter.encode(doc.toDelta()), "Hello World!<br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "Hello World!<br><br>");
       });
 
       test("Bold paragraph", () {
@@ -24,7 +25,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<strong>Hello World!</strong><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<strong>Hello World!</strong><br><br>");
       });
 
       test("Italic paragraph", () {
@@ -35,7 +37,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<em>Hello World!</em><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<em>Hello World!</em><br><br>");
       });
 
       test("Bold and Italic paragraph", () {
@@ -46,7 +49,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<em><strong>Hello World!</em></strong><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<em><strong>Hello World!</em></strong><br><br>");
       });
     });
 
@@ -60,7 +64,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<h1>Hello World!</h1><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<h1>Hello World!</h1><br><br>");
       });
 
       test("2", () {
@@ -72,7 +77,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<h2>Hello World!</h2><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<h2>Hello World!</h2><br><br>");
       });
 
       test("3", () {
@@ -84,7 +90,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<h3>Hello World!</h3><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<h3>Hello World!</h3><br><br>");
       });
 
       test("In list", () {
@@ -96,7 +103,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<ul><li><h1>Hello World!</h1></li></ul><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<ul><li><h1>Hello World!</h1></li></ul><br><br>");
       });
     });
 
@@ -181,7 +189,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<blockquote>Hello World!</blockquote><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<blockquote>Hello World!</blockquote><br><br>");
       });
       test("Code", () {
         final NotusDocument doc = NotusDocument.fromJson([
@@ -192,7 +201,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<br><code>Hello World!</code><br><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<br><code>Hello World!</code><br><br><br>");
       });
       test("Ordered list", () {
         final NotusDocument doc = NotusDocument.fromJson([
@@ -203,7 +213,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<ol><li>Hello World!</li></ol><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<ol><li>Hello World!</li></ol><br><br>");
       });
       test("List with bold", () {
         final NotusDocument doc = NotusDocument.fromJson([
@@ -217,7 +228,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<ol><li><strong>Hello World!</strong></li></ol><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<ol><li><strong>Hello World!</strong></li></ol><br><br>");
       });
       test("Unordered list", () {
         final NotusDocument doc = NotusDocument.fromJson([
@@ -233,7 +245,8 @@ void main() {
           }
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<ul><li>Hello World!</li><li>Hello World!</li></ul><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<ul><li>Hello World!</li><li>Hello World!</li></ul><br><br>");
       });
     });
 
@@ -252,7 +265,8 @@ void main() {
           {"insert": "\n"}
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<img src=\"http://fake.link/image.png\"><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<img src=\"http://fake.link/image.png\"><br><br>");
       });
       test("Line", () {
         final NotusDocument doc = NotusDocument.fromJson([
@@ -281,7 +295,8 @@ void main() {
           {"insert": "\n"}
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<a href=\"http://fake.link\">Hello World!</a><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<a href=\"http://fake.link\">Hello World!</a><br><br>");
       });
 
       test("Italic", () {
@@ -293,7 +308,8 @@ void main() {
           {"insert": "\n"}
         ]);
 
-        expect(converter.encode(doc.toDelta()), "<a href=\"http://fake.link\"><em>Hello World!</em></a><br><br>");
+        expect(converter.encode(doc.toDelta()),
+            "<a href=\"http://fake.link\"><em>Hello World!</em></a><br><br>");
       });
 
       test("In list", () {
@@ -309,7 +325,8 @@ void main() {
         ]);
 
         expect(
-            converter.encode(doc.toDelta()), "<ul><li><a href=\"http://fake.link\">Hello World!</a></li></ul><br><br>");
+            converter.encode(doc.toDelta()),
+            "<ul><li><a href=\"http://fake.link\">Hello World!</a></li></ul><br><br>");
       });
     });
   });
@@ -564,7 +581,8 @@ void main() {
         final delta = Delta()..insert("\n");
         NotusDocument tempdocument = NotusDocument.fromDelta(delta);
         var index = tempdocument.length;
-        tempdocument.format(index - 1, 0, NotusAttribute.embed.image("http://fake.link/image.png"));
+        tempdocument.format(index - 1, 0,
+            NotusAttribute.embed.image("http://fake.link/image.png"));
         final NotusDocument doc = tempdocument;
 
         expect(converter.decode(html), doc.toDelta());
@@ -574,7 +592,8 @@ void main() {
         final delta = Delta()..insert("\n");
         NotusDocument tempdocument = NotusDocument.fromDelta(delta);
         var index = tempdocument.length;
-        tempdocument.format(index - 1, 0, NotusAttribute.embed.horizontalRule);
+        tempdocument.format(index - 1, 0,
+            NotusAttribute.embed.horizontalRule);
         final NotusDocument doc = tempdocument;
 
         expect(converter.decode(html), doc.toDelta());

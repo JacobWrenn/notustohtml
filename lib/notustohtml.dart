@@ -314,10 +314,10 @@ class _NotusHtmlDecoder extends Converter<String, Delta> {
 
   Delta _parseElement(Element element, Delta delta, String type,
       {Map<String, dynamic> attributes,
-        String listType,
-        next,
-        inList,
-        inBlock}) {
+      String listType,
+      next,
+      inList,
+      inBlock}) {
     if (type == "block") {
       Map<String, dynamic> blockAttributes = {};
       if (inBlock != null) blockAttributes = inBlock;
