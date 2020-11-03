@@ -122,63 +122,7 @@ void main() {
 
         expect(converter.encode(doc.toDelta()), html);
       });
-      test("Paragraph Element with children elements", () {
-        final String html = "<p>Hello World!<a href=\"http://fake.link\">Hello World!</a> Another hello world!</p><br><br>";
-        final NotusDocument doc = NotusDocument.fromJson([
-          {
-            "insert": "Hello World!",
-          },
-          {
-            "insert": "Hello World!",
-            "attributes": {"a": "http://fake.link"},
-          },
-          {
-            "insert": " Another hello world!",
-          },
-          {
-            "insert": "\n",
-            "attributes": {},
-          }
-        ]);
 
-        expect(converter.decode(html), doc.toDelta());
-      });
-      test("Multiples paragraps with children", () {
-        final String html =
-            "<p>Hello World!<a href=\"http://fake.link\">Hello World!</a> Another hello world!</p><br><br><p>Hello World!<a href=\"http://fake.link\">Hello World!</a> Another hello world!</p><br><br>";
-        final NotusDocument doc = NotusDocument.fromJson([
-          {
-            "insert": "Hello World!",
-          },
-          {
-            "insert": "Hello World!",
-            "attributes": {"a": "http://fake.link"},
-          },
-          {
-            "insert": " Another hello world!",
-          },
-          {
-            "insert": "\n",
-            "attributes": {},
-          },
-          {
-            "insert": "Hello World!",
-          },
-          {
-            "insert": "Hello World!",
-            "attributes": {"a": "http://fake.link"},
-          },
-          {
-            "insert": " Another hello world!",
-          },
-          {
-            "insert": "\n",
-            "attributes": {},
-          }
-        ]);
-
-        expect(converter.decode(html), doc.toDelta());
-      });
       test("Quote", () {
         final NotusDocument doc = NotusDocument.fromJson([
           {"insert": "Hello World!"},
