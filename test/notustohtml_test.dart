@@ -108,6 +108,21 @@ void main() {
     });
 
     group('Blocks', () {
+      test("Paragraph Element", () {
+        final String html = "Hello World!<br><br>";
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!",
+          },
+          {
+            "insert": "\n",
+            "attributes": {},
+          }
+        ]);
+
+        expect(converter.encode(doc.toDelta()), html);
+      });
+
       test("Quote", () {
         final NotusDocument doc = NotusDocument.fromJson([
           {"insert": "Hello World!"},
@@ -361,6 +376,77 @@ void main() {
     });
 
     group('Blocks', () {
+      test("Paragraph Element", () {
+        final String html = "<p>Hello World!</p>";
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!",
+          },
+          {
+            "insert": "\n",
+            "attributes": {},
+          }
+        ]);
+
+        expect(converter.decode(html), doc.toDelta());
+      });
+      test("Paragraph Element with children elements", () {
+        final String html = "<p>Hello World!<a href=\"http://fake.link\">Hello World!</a> Another hello world!</p>";
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!",
+          },
+          {
+            "insert": "Hello World!",
+            "attributes": {"a": "http://fake.link"},
+          },
+          {
+            "insert": " Another hello world!",
+          },
+          {
+            "insert": "\n",
+            "attributes": {},
+          }
+        ]);
+
+        expect(converter.decode(html), doc.toDelta());
+      });
+      test("Multiples paragraps with children", () {
+        final String html =
+            "<p>Hello World!<a href=\"http://fake.link\">Hello World!</a> Another hello world!</p><p>Hello World!<a href=\"http://fake.link\">Hello World!</a> Another hello world!</p>";
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!",
+          },
+          {
+            "insert": "Hello World!",
+            "attributes": {"a": "http://fake.link"},
+          },
+          {
+            "insert": " Another hello world!",
+          },
+          {
+            "insert": "\n",
+            "attributes": {},
+          },
+          {
+            "insert": "Hello World!",
+          },
+          {
+            "insert": "Hello World!",
+            "attributes": {"a": "http://fake.link"},
+          },
+          {
+            "insert": " Another hello world!",
+          },
+          {
+            "insert": "\n",
+            "attributes": {},
+          }
+        ]);
+
+        expect(converter.decode(html), doc.toDelta());
+      });
       test("Quote", () {
         final String html = "<blockquote>Hello World!</blockquote><br><br>";
         final NotusDocument doc = NotusDocument.fromJson([
