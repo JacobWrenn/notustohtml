@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.8] - 2020-11-04
+
+* Support decoding of `<p>` elements with children
+
 ## [0.0.7] - 2020-06-12
 
 * Ensure deltas end with `\n`
