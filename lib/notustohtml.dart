@@ -103,6 +103,13 @@ class _NotusHtmlEncoder extends Converter<Delta, String> {
         } else if (embed.type == "image") {
           buffer.write('<img src="${embed.data["source"]}">');
         }
+      } else if (op.data is Map) {
+        final map = op.data as Map;
+        if (map["_type"] == "hr") {
+          buffer.write("<hr>");
+        } else if (map["_type"] == "image") {
+          buffer.write('<img src="${map["source"]}">');
+        }
       } else {
         if (lf == -1) {
           _handleSpan(op.data, op.attributes);

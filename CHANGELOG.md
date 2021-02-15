@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.9-dev.2.0] - 2021-02-14
+
+* Recognise embeds when they appear as Map
+
 ## [0.0.9-dev.1.0] - 2021-02-14
 
 * Support notus 1.0.0-dev versions and quill delta 2.0.0
