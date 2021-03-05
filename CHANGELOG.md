@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.9-dev.3.0] - 2021-03-05
+
+* Fixed a bug where embeds were positioned incorrectly
+* Support the new underline and strikethrough features from Zefyr
+
 ## [0.0.9-dev.2.0] - 2021-02-14
 
 * Recognise embeds when they appear as Map

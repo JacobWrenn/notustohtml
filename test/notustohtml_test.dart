@@ -27,6 +27,29 @@ void main() {
             "<strong>Hello World!</strong><br><br>");
       });
 
+      test("Underline paragraph", () {
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!\n",
+            "attributes": {"u": true}
+          }
+        ]);
+
+        expect(converter.encode(doc.toDelta()), "<u>Hello World!</u><br><br>");
+      });
+
+      test("Strikethrough paragraph", () {
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!\n",
+            "attributes": {"s": true}
+          }
+        ]);
+
+        expect(
+            converter.encode(doc.toDelta()), "<del>Hello World!</del><br><br>");
+      });
+
       test("Italic paragraph", () {
         final NotusDocument doc = NotusDocument.fromJson([
           {
@@ -194,34 +217,17 @@ void main() {
 
     group('Embeds', () {
       test("Image", () {
-        final NotusDocument doc = NotusDocument.fromJson([
-          {
-            "insert": "",
-            "attributes": {
-              "embed": {
-                "type": "image",
-                "source": "http://fake.link/image.png",
-              },
-            },
-          },
-          {"insert": "\n"}
-        ]);
+        final NotusDocument doc = NotusDocument()
+          ..insert(0, "test text")
+          ..insert(0, BlockEmbed.image("http://fake.link/image.png"))
+          ..insert(0, "test text");
 
         expect(converter.encode(doc.toDelta()),
-            "<img src=\"http://fake.link/image.png\"><br><br>");
+            "test text<br><br><img src=\"http://fake.link/image.png\"><br><br>test text<br><br>");
       });
       test("Line", () {
-        final NotusDocument doc = NotusDocument.fromJson([
-          {
-            "insert": "",
-            "attributes": {
-              "embed": {
-                "type": "hr",
-              },
-            },
-          },
-          {"insert": "\n"}
-        ]);
+        final NotusDocument doc = NotusDocument()
+          ..insert(0, BlockEmbed.horizontalRule);
 
         expect(converter.encode(doc.toDelta()), "<hr><br><br>");
       });
@@ -289,6 +295,30 @@ void main() {
           {
             "insert": "Hello World!\n",
             "attributes": {"b": true}
+          }
+        ]);
+
+        expect(converter.decode(html), doc.toDelta());
+      });
+
+      test("Underline paragraph", () {
+        final String html = "<u>Hello World!</u><br><br>";
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!\n",
+            "attributes": {"u": true}
+          }
+        ]);
+
+        expect(converter.decode(html), doc.toDelta());
+      });
+
+      test("Strikethrough paragraph", () {
+        final String html = "<del>Hello World!</del><br><br>";
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!\n",
+            "attributes": {"s": true}
           }
         ]);
 
