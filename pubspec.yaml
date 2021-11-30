@@ -2,14 +2,15 @@ name: notustohtml
 description: Convert the Notus document format to an HTML representation.
 version: 0.0.8
 homepage: https://github.com/JacobWrenn/notustohtml
+forked: https://github.com/mdpe-ir/notustohtml/
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  notus: ^0.1.5
-  quill_delta: ^1.0.2
-  html: ^0.14.0
+  notus: ^1.0.0-dev.10.0
+  quill_delta: ^3.0.0-nullsafety.2
+  html: ^0.15.0
 
 dev_dependencies:
   test:
