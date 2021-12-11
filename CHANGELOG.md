@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-rc.1] - 2021-12-11
+
+* Null safety
+* Support for notus 1.0.0-rc.1
+
 ## [0.0.9-dev.3.0] - 2021-03-05
 
 * Fixed a bug where embeds were positioned incorrectly
