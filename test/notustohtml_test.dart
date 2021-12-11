@@ -1,4 +1,3 @@
-import 'package:quill_delta/quill_delta.dart';
 import 'package:test/test.dart';
 import 'package:notustohtml/notustohtml.dart';
 import 'package:notus/notus.dart';
@@ -26,6 +25,29 @@ void main() {
 
         expect(converter.encode(doc.toDelta()),
             "<strong>Hello World!</strong><br><br>");
+      });
+
+      test("Underline paragraph", () {
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!\n",
+            "attributes": {"u": true}
+          }
+        ]);
+
+        expect(converter.encode(doc.toDelta()), "<u>Hello World!</u><br><br>");
+      });
+
+      test("Strikethrough paragraph", () {
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!\n",
+            "attributes": {"s": true}
+          }
+        ]);
+
+        expect(
+            converter.encode(doc.toDelta()), "<del>Hello World!</del><br><br>");
       });
 
       test("Italic paragraph", () {
@@ -195,34 +217,17 @@ void main() {
 
     group('Embeds', () {
       test("Image", () {
-        final NotusDocument doc = NotusDocument.fromJson([
-          {
-            "insert": "",
-            "attributes": {
-              "embed": {
-                "type": "image",
-                "source": "http://fake.link/image.png",
-              },
-            },
-          },
-          {"insert": "\n"}
-        ]);
+        final NotusDocument doc = NotusDocument()
+          ..insert(0, "test text")
+          ..insert(0, BlockEmbed.image("http://fake.link/image.png"))
+          ..insert(0, "test text");
 
         expect(converter.encode(doc.toDelta()),
-            "<img src=\"http://fake.link/image.png\"><br><br>");
+            "test text<br><br><img src=\"http://fake.link/image.png\"><br><br>test text<br><br>");
       });
       test("Line", () {
-        final NotusDocument doc = NotusDocument.fromJson([
-          {
-            "insert": "",
-            "attributes": {
-              "embed": {
-                "type": "hr",
-              },
-            },
-          },
-          {"insert": "\n"}
-        ]);
+        final NotusDocument doc = NotusDocument()
+          ..insert(0, BlockEmbed.horizontalRule);
 
         expect(converter.encode(doc.toDelta()), "<hr><br><br>");
       });
@@ -290,6 +295,30 @@ void main() {
           {
             "insert": "Hello World!\n",
             "attributes": {"b": true}
+          }
+        ]);
+
+        expect(converter.decode(html), doc.toDelta());
+      });
+
+      test("Underline paragraph", () {
+        final String html = "<u>Hello World!</u><br><br>";
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!\n",
+            "attributes": {"u": true}
+          }
+        ]);
+
+        expect(converter.decode(html), doc.toDelta());
+      });
+
+      test("Strikethrough paragraph", () {
+        final String html = "<del>Hello World!</del><br><br>";
+        final NotusDocument doc = NotusDocument.fromJson([
+          {
+            "insert": "Hello World!\n",
+            "attributes": {"s": true}
           }
         ]);
 
@@ -391,7 +420,8 @@ void main() {
         expect(converter.decode(html), doc.toDelta());
       });
       test("Paragraph Element with children elements", () {
-        final String html = "<p>Hello World!<a href=\"http://fake.link\">Hello World!</a> Another hello world!</p>";
+        final String html =
+            "<p>Hello World!<a href=\"http://fake.link\">Hello World!</a> Another hello world!</p>";
         final NotusDocument doc = NotusDocument.fromJson([
           {
             "insert": "Hello World!",
@@ -484,7 +514,8 @@ void main() {
         expect(converter.decode(html), doc.toDelta());
       });
       test("List with bold", () {
-        final String html = "<ol><li><strong>Hello World!</strong></li></ol><br><br>";
+        final String html =
+            "<ol><li><strong>Hello World!</strong></li></ol><br><br>";
         final NotusDocument doc = NotusDocument.fromJson([
           {
             "insert": "Hello World!",
@@ -499,7 +530,8 @@ void main() {
         expect(converter.decode(html), doc.toDelta());
       });
       test("Unordered list", () {
-        final String html = "<ul><li>Hello World!</li><li>Hello World!</li></ul><br><br>";
+        final String html =
+            "<ul><li>Hello World!</li><li>Hello World!</li></ul><br><br>";
         final NotusDocument doc = NotusDocument.fromJson([
           {"insert": "Hello World!"},
           {
@@ -520,23 +552,19 @@ void main() {
     group('Embeds', () {
       test("Image", () {
         final String html = "<img src=\"http://fake.link/image.png\"><br><br>";
-        final delta = Delta()..insert("\n");
-        NotusDocument tempdocument = NotusDocument.fromDelta(delta);
-        var index = tempdocument.length;
-        tempdocument.format(index - 1, 0,
-            NotusAttribute.embed.image("http://fake.link/image.png"));
-        final NotusDocument doc = tempdocument;
+        NotusDocument doc = NotusDocument.fromJson([
+          {"insert": "\n"}
+        ]);
+        doc.insert(0, BlockEmbed.image("http://fake.link/image.png"));
 
         expect(converter.decode(html), doc.toDelta());
       });
       test("Line", () {
         final String html = "<hr><br><br>";
-        final delta = Delta()..insert("\n");
-        NotusDocument tempdocument = NotusDocument.fromDelta(delta);
-        var index = tempdocument.length;
-        tempdocument.format(index - 1, 0,
-            NotusAttribute.embed.horizontalRule);
-        final NotusDocument doc = tempdocument;
+        NotusDocument doc = NotusDocument.fromJson([
+          {"insert": "\n"}
+        ]);
+        doc.insert(0, BlockEmbed.horizontalRule);
 
         expect(converter.decode(html), doc.toDelta());
       });
@@ -544,7 +572,8 @@ void main() {
 
     group('Links', () {
       test("Plain", () {
-        final String html = "<a href=\"http://fake.link\">Hello World!</a><br><br>";
+        final String html =
+            "<a href=\"http://fake.link\">Hello World!</a><br><br>";
         final NotusDocument doc = NotusDocument.fromJson([
           {
             "insert": "Hello World!",
@@ -557,7 +586,8 @@ void main() {
       });
 
       test("Italic", () {
-        final String html = "<a href=\"http://fake.link\"><em>Hello World!</em></a><br><br>";
+        final String html =
+            "<a href=\"http://fake.link\"><em>Hello World!</em></a><br><br>";
         final NotusDocument doc = NotusDocument.fromJson([
           {
             "insert": "Hello World!",
@@ -570,7 +600,8 @@ void main() {
       });
 
       test("In list", () {
-        final String html = "<ul><li><a href=\"http://fake.link\">Hello World!</a></li></ul>";
+        final String html =
+            "<ul><li><a href=\"http://fake.link\">Hello World!</a></li></ul>";
         final NotusDocument doc = NotusDocument.fromJson([
           {
             "insert": "Hello World!",
