@@ -71,7 +71,7 @@ void main() {
         ]);
 
         expect(converter.encode(doc.toDelta()),
-            "<em><strong>Hello World!</em></strong><br><br>");
+            "<em><strong>Hello World!</strong></em><br><br>");
       });
     });
 

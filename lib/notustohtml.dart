@@ -7,6 +7,32 @@ import 'package:html/parser.dart';
 import 'package:notus/notus.dart';
 import 'package:quill_delta/quill_delta.dart';
 
+void main() {
+  final converter = NotusHtmlCodec();
+
+  final doc = NotusDocument.fromJson(
+    [
+      {"insert": "1"},
+      {
+        "insert": "2",
+        "attributes": {"i": true}
+      },
+      {
+        "insert": "3",
+        "attributes": {"i": true, "b": true}
+      },
+      {
+        "insert": "4",
+        "attributes": {"b": true}
+      },
+      {"insert": "\n"}
+    ],
+  );
+
+  String html = converter.encode(doc.toDelta());
+  print(html);
+}
+
 class NotusHtmlCodec extends Codec<Delta, String> {
   const NotusHtmlCodec();
 
@@ -177,13 +203,13 @@ class _NotusHtmlEncoder extends Converter<Delta, String> {
       {bool? hr, String? source}) {
     NotusAttribute? wasA;
     // First close any current styles if needed
-    for (var value in currentStyle.values) {
+    for (var value in currentStyle.values.toList().reversed) {
       if (value.scope == NotusAttributeScope.line) continue;
       if (value.key == "a") {
         wasA = value;
         continue;
       }
-      if (style.containsSame(value)) continue;
+      //if (style.containsSame(value)) continue;
       final padding = _trimRight(buffer);
       _writeAttribute(buffer, value, close: true);
       if (padding.isNotEmpty) buffer.write(padding);
@@ -194,7 +220,7 @@ class _NotusHtmlEncoder extends Converter<Delta, String> {
     // Now open any new styles.
     for (var value in style.values) {
       if (value.scope == NotusAttributeScope.line) continue;
-      if (currentStyle.containsSame(value)) continue;
+      //if (currentStyle.containsSame(value)) continue;
       final originalText = text;
       text = text.trimLeft();
       final padding = ' ' * (originalText.length - text.length);
