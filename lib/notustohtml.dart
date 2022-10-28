@@ -7,32 +7,6 @@ import 'package:html/parser.dart';
 import 'package:notus/notus.dart';
 import 'package:quill_delta/quill_delta.dart';
 
-void main() {
-  final converter = NotusHtmlCodec();
-
-  final doc = NotusDocument.fromJson(
-    [
-      {"insert": "1"},
-      {
-        "insert": "2",
-        "attributes": {"i": true}
-      },
-      {
-        "insert": "3",
-        "attributes": {"i": true, "b": true}
-      },
-      {
-        "insert": "4",
-        "attributes": {"b": true}
-      },
-      {"insert": "\n"}
-    ],
-  );
-
-  String html = converter.encode(doc.toDelta());
-  print(html);
-}
-
 class NotusHtmlCodec extends Codec<Delta, String> {
   const NotusHtmlCodec();
 
